@@ -1,0 +1,45 @@
+# The name of the GitHub Actions workflow. This will appear in the GitHub Actions page in the github account of this repo.
+name: Docker Build and Push
+# The event that triggers the workflow. "on: push" means it runs every time code is pushed to the repository.
+on: push
+# Defines the jobs that will run as part of this workflow.
+jobs:
+  # We define a single job named "build-and-push-docker-image".
+  build:
+    # Declare the operating system environment for the runner. We chose the latest version of Ubuntu.
+    runs-on: ubuntu-latest
+    # A list of steps that make up the "build-and-push-docker-image" job. They run sequentially.
+    steps:
+      # Step 1: Checks out the repository's code so the workflow can access it.
+      - name: Checkout Code
+        # Uses the official GitHub action for checking out the code (version 3).
+        uses: actions/checkout@v3
+
+      # Step 2: Sets up Docker Buildx, a builder with better caching and features.
+      - name: Set up Docker Buildx
+        # Uses the official Docker action to install and Buildx (version 2).
+        uses: docker/setup-buildx-action@v2
+
+      # Step 3: Authenticates with Docker Hub to allow pushing the image later.
+      - name: Login to Docker Hub
+        # Uses the official Docker action for logging into a registry (version 2).
+        uses: docker/login-action@v2
+        # Provides the required credentials using variables that are stored in GitHub Secrets.
+        with:
+          # Fetches the Docker Hub username stored securely in GitHub Secrets.
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          # Fetches the Docker Hub secret/token stored securely in GitHub Secrets.
+          password: ${{ secrets.DOCKERHUB_SECRET }}
+
+      # Step 4: Builds the Docker image from the Dockerfile and pushes it to Docker Hub.
+      - name: Build and Push
+        # Uses the official Docker action for building and pushing images (version 4).
+        uses: docker/build-push-action@v4
+        # Provides the necessary arguments for the build process.
+        with:
+          # Sets the build context to the root directory where the Dockerfile is located.
+          context: .
+          # Instructs the action to push the built image to the registry.
+          push: true
+          # Tags the image with the username and image name, marking it as the 'latest' version.
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/final-python:latest
