@@ -29,7 +29,7 @@ jobs:
           # Fetches the Docker Hub username stored securely in GitHub Secrets.
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           # Fetches the Docker Hub secret/token stored securely in GitHub Secrets.
-          password: ${{ secrets.DOCKERHUB_SECRET }}
+          password: ${{ secrets.DOCKER_HUB_SECRET }}
 
       # Step 4: Builds the Docker image from the Dockerfile and pushes it to Docker Hub.
       - name: Build and Push
